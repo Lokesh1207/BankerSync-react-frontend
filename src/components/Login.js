@@ -15,34 +15,62 @@ const Login = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await fetch("https://bankersync-deployment.onrender.com/auth/login", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  //       body: new URLSearchParams({ username, password }),
+  //     });
+
+  //     const result = await response.text();
+  //     setMessage(result);
+
+  //     if (response.ok && result === "login successful") {
+  //       localStorage.setItem("isAuthenticated", true);
+  //       console.log(`Welcome, ${username}!`)
+  //       navigate("/");
+  //     } else {
+  //       setMessage("Invalid username or password !");
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     setMessage("An error occurred while logging in.");
+  //   }
+    
+  //    setTimeout(() => {
+  //     setMessage("");
+  //   }, 3000);
+    
+  // };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://bankersync-deployment.onrender.com/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ username, password }),
-      });
-
-      const result = await response.text();
+      // Send data in query string format as required by @RequestParam
+      const params = new URLSearchParams({ username, password });
+  
+      const response = await api.post(`/auth/login?${params.toString()}`);
+  
+      const result = response.data; // Axios parses the response automatically
       setMessage(result);
-
-      if (response.ok && result === "login successful") {
+  
+      if (response.status === 200 && result === "login successful") {
         localStorage.setItem("isAuthenticated", true);
-        console.log(`Welcome, ${username}!`)
+        console.log(`Welcome, ${username}!`);
         navigate("/");
       } else {
-        setMessage("Invalid username or password !");
+        setMessage("Invalid username or password!");
       }
     } catch (error) {
       console.error("Login error:", error);
       setMessage("An error occurred while logging in.");
     }
-    
-     setTimeout(() => {
+  
+    setTimeout(() => {
       setMessage("");
     }, 3000);
-    
   };
 
   return (
