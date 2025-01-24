@@ -1,22 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Box,
   TextField,
   Button,
   MenuItem,
-  Typography,
-  InputLabel,
-  Paper,
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
+  Snackbar,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import MuiAlert from "@mui/material/Alert";
 import api from "../api/api";
-import { DataGrid } from "@mui/x-data-grid";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Input = styled("input")({
   display: "none",
@@ -39,19 +34,7 @@ const Loan = () => {
   const [loanPendingPrincipalAmount, setLoanPendingPrincipalAmount] = useState("");
   const [loanPendingTotalAmount, setLoanPendingTotalAmount] = useState("");
   const [itemStatus, setItemStatus] = useState("NEW");
-  const [loanList, setLoanList] = useState([])
-
-  useEffect(() => {
-    const fetchLoans = async () => {
-      try {
-        const response = await api.get("/loan/getLoans");
-        setLoanList(response.data);
-      } catch (err) {
-        console.error("Error fetching loan list:", err);
-      }
-    };
-    fetchLoans();
-  }, []);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,12 +52,12 @@ const Loan = () => {
       itemLoanValue,
       itemInterestPercentage,
       itemInterestPeriod,
-      itemInterestValue,
+      // itemInterestValue,
       itemLoanDate: formattedItemLoanDate,
       itemReturnDate: formattedItemReturnDate,
-      loanPendingInterestAmount,
-      loanPendingPrincipalAmount,
-      loanPendingTotalAmount,
+      // loanPendingInterestAmount,
+      // loanPendingPrincipalAmount,
+      // loanPendingTotalAmount,
       itemStatus,
     }));
   
@@ -106,45 +89,13 @@ const Loan = () => {
       setLoanPendingTotalAmount('');
       setItemStatus('NEW');
 
-      console.log("Data submitted successfully:", response.data);
+      setSnackbar({ open: true, message: "Loan added successfully.", severity: "success" });
     } catch (error) {
       console.error("Error submitting data:", error);
+      setSnackbar({ open: true, message: "Failed to add Loan.", severity: "error" });
     }
   };
 
-  
-  const columns = [
-    { field: 'loanId', headerName: 'Loan_ID', width: 90 },
-    { field: 'clientId', headerName: 'Client_ID', width: 90 },
-    { field: 'ownerName', headerName: 'Name', width: 150 },
-    { field: 'ownerContactNumber', headerName: 'ownerContactNumber', width: 150 },
-    { field: 'createdAt', headerName: 'createdAt', width: 180 },
-    { field: 'itemPicture', headerName: 'itemPicture', width: 150 },
-    { field: 'itemValue', headerName: 'itemValue', width: 150 },
-    { field: 'itemLoanValue', headerName: 'itemLoanValue', width: 120 },
-    { field: 'itemInterestPercentage', headerName: 'itemInterestPercentage', width: 120 },
-    { field: 'itemInterestPeriod', headerName: 'itemInterestPeriod', width: 150 },
-    { field: 'itemInterestValue', headerName: 'itemInterestValue', width: 150 },
-    { field: 'itemLoanDate', headerName: 'itemLoanDate', width: 180 },
-    { field: 'itemReturnDate', headerName: 'itemReturnDate', width: 180 },
-    { field: 'loanPendingInterestAmount', headerName: 'loanPendingInterestAmount', width: 180 },
-    { field: 'loanPendingPrincipalAmount', headerName: 'loanPendingPrincipalAmount', width: 180 },
-    { field: 'loanPendingTotalAmount', headerName: 'loanPendingTotalAmount', width: 180 },
-    { field: 'itemStatus', headerName: 'itemStatus', width: 180 },
-
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 150,
-      renderCell: (params) => (
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Button color="secondary" >Edit</Button>
-          <Button color="secondary">Delete</Button>
-        </Box>
-      ),
-    },
-  ];
-  
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
       <form onSubmit={handleSubmit}>
@@ -233,7 +184,7 @@ const Loan = () => {
           onChange={(e) => setItemInterestPeriod(e.target.value)}
           margin="normal"
         />
-        <TextField
+        {/* <TextField
           label="Item Interest Value"
           name="itemInterestValue"
           type="number"
@@ -241,7 +192,7 @@ const Loan = () => {
           value={itemInterestValue}
           onChange={(e) => setItemInterestValue(e.target.value)}
           margin="normal"
-        />
+        /> */}
         <TextField
           label="Item Loan Date"
           name="itemLoanDate"
@@ -262,7 +213,7 @@ const Loan = () => {
           margin="normal"
           InputLabelProps={{ shrink: true }}
         />
-        <TextField
+        {/* <TextField
           label="Loan Pending Interest Amount"
           name="loanPendingInterestAmount"
           type="number"
@@ -288,7 +239,7 @@ const Loan = () => {
           value={loanPendingTotalAmount}
           onChange={(e) => setLoanPendingTotalAmount(e.target.value)}
           margin="normal"
-        />
+        /> */}
         <TextField
           select
           label="Item Status"
@@ -307,17 +258,13 @@ const Loan = () => {
         </Button>
       </form>
 
-      <h2>Loan List</h2>
-      <div style={{ height: 400, width: "100%" }}>
-        <DataGrid
-          rows={loanList}
-          columns={columns}
-          disableSelectionOnClick
-          getRowId={(row) => row.loanId}
-          rowHeight={75}
-        />
-      </div>
-
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
+      </Snackbar>
     </div>
   );
 };

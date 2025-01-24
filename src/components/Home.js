@@ -1,8 +1,9 @@
 import React from 'react'
-import SideNav from '../SideNav'
+
 const Home = () => {
   return (
-    <SideNav />
+    <div></div>
+    // <SideNav />
   )
 }
 

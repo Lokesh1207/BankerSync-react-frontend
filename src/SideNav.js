@@ -15,15 +15,50 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ClientIcon from '@mui/icons-material/Person'; 
 import LoanIcon from '@mui/icons-material/AttachMoney'; 
 import ReportIcon from '@mui/icons-material/Assessment'; 
 import { Outlet } from 'react-router-dom';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 import './App.css';
 
 const drawerWidth = 240;
+
+const StyledLink = styled(Link)(({ theme }) => ({
+  textDecoration: "none",
+  color: theme.palette.text.primary,
+  display: "flex",
+  alignItems: "center",
+  padding: "10px 16px",
+  borderRadius: "8px",
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+    color: theme.palette.primary.main,
+  },
+}));
+
+const StyledLogout = styled('div')(({ theme }) => ({
+  textDecoration: "none",
+  color: theme.palette.text.primary,
+  display: "flex",
+  alignItems: "center",
+  padding: "2px 2px",
+  cursor: 'pointer', 
+  "&:hover": {
+    color: theme.palette.primary.main,
+  },
+}));
+
+
+const HomeLink = styled(Link)(({ theme }) => ({
+  textDecoration: "none",
+  color: theme.palette.text.primary,
+}));
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -40,10 +75,7 @@ const closedMixin = (theme) => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
+  width: 0, 
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -106,6 +138,13 @@ export default function SideNav() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated"); 
+    navigate("/login"); 
+  };
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -131,7 +170,7 @@ export default function SideNav() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component={HomeLink} to="/" sx={{color: 'white'}}>
             BankerSync
           </Typography>
         </Toolbar>
@@ -144,7 +183,7 @@ export default function SideNav() {
         </DrawerHeader>
         <Divider />
         <List>
-          <ListItem button component={Link} to="/client">
+          <ListItem button component={StyledLink} to="/client">
             <ListItemIcon
               sx={{
                 opacity: open ? 1 : 0, 
@@ -159,7 +198,22 @@ export default function SideNav() {
               }}
             />
           </ListItem>
-          <ListItem button component={Link} to="/loan">
+          <ListItem button component={StyledLink} to="/client/getClients">
+            <ListItemIcon
+              sx={{
+                opacity: open ? 1 : 0, 
+              }}
+            >
+              <ManageAccountsIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Manage Client"
+              sx={{
+                opacity: open ? 1 : 0, 
+              }}
+            />
+          </ListItem>
+          <ListItem button component={StyledLink} to="/loan">
             <ListItemIcon
               sx={{
                 opacity: open ? 1 : 0, 
@@ -174,7 +228,22 @@ export default function SideNav() {
               }}
             />
           </ListItem>
-          <ListItem button component={Link} to="/reports">
+          <ListItem button component={StyledLink} to="/loan/getLoans">
+            <ListItemIcon
+              sx={{
+                opacity: open ? 1 : 0, 
+              }}
+            >
+              <CreditCardIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Manage Loans"
+              sx={{
+                opacity: open ? 1 : 0, 
+              }}
+            />
+          </ListItem>
+          <ListItem button component={StyledLink} to="/reports">
             <ListItemIcon
               sx={{
                 opacity: open ? 1 : 0, 
@@ -189,13 +258,13 @@ export default function SideNav() {
               }}
             />
           </ListItem>
-          <ListItem button component={Link} to="">
+          <ListItem button component={StyledLink} to="">
             <ListItemIcon
               sx={{
                 opacity: open ? 1 : 0, 
               }}
             >
-              <ReportIcon />
+              <SettingsIcon />
             </ListItemIcon>
             <ListItemText
               primary="Settings"
@@ -203,6 +272,23 @@ export default function SideNav() {
                 opacity: open ? 1 : 0, 
               }}
             />
+          </ListItem>
+          <ListItem button onClick={handleLogout} sx={{borderRadius: "8px"}}>
+            <StyledLogout>
+            <ListItemIcon
+              sx={{
+                opacity: open ? 1 : 0, 
+              }}
+            >
+              <LogoutIcon/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Logout"
+              sx={{
+                opacity: open ? 1 : 0, 
+              }}
+            />
+            </StyledLogout>
           </ListItem>
         </List>
       </Drawer>

@@ -1,23 +1,32 @@
 import { Modal, TextField, Button, Box } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import React, { memo } from "react";
 
-const EditModal = ({ isOpen, onClose, client, onUpdate, onSave }) => {
+const EditModal = memo(({ isOpen, onClose, client, onUpdate, onSave }) => {
+
   const [clientProof, setClientProof] = useState(null);
   const [clientPicture, setClientPicture] = useState(null);
+
+  useEffect(() => {
+    if (client) {
+      setClientProof(client.clientProof); 
+      setClientPicture(client.clientPicture);
+    }
+  }, [client]);
 
   const handleFileChange = (event, setter) => {
     setter(event.target.files[0]);
   };
 
   const handleSave = () => {
-    onSave(client, clientProof, clientPicture);
+    onSave({ ...client, clientProof, clientPicture});
   };
 
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box
         sx={{
-          backgroundColor: "white",
+          backgroundColor: (theme) => theme.palette.background.paper,
           padding: 4,
           margin: "auto",
           width: 400,
@@ -27,7 +36,6 @@ const EditModal = ({ isOpen, onClose, client, onUpdate, onSave }) => {
         }}
       >
         <h2>Edit Client</h2>
-
         <TextField
           label="Client Name"
           value={client?.clientName || ""}
@@ -78,12 +86,16 @@ const EditModal = ({ isOpen, onClose, client, onUpdate, onSave }) => {
           accept=".png,.jpg,.jpeg"
           onChange={(e) => handleFileChange(e, setClientPicture)}
         />
+        <input 
+          type="date"
+          onChange={(e) => onUpdate({ ...client, clientUpdatedAt: e.target.value })}
+        />
         <Button variant="contained" color="primary" onClick={handleSave}>
           Save
         </Button>
       </Box>
     </Modal>
   );
-};
+});
 
 export default EditModal;
