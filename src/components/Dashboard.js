@@ -23,15 +23,17 @@ const Dashboard = () => {
   const [clientOverview, setClientOverview] = useState({
     totalClients: 0,
     activeClients: 0,
-    recentClients: [], // Add recentClients to the state
+    recentClients: [], 
   });
 
+  const baseUrl = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
-    fetch("http://localhost:8080/dashboard/loans-overview")
+    fetch(`${baseUrl}/dashboard/loans-overview`)
       .then((res) => res.json())
       .then((data) => setLoanOverview(data.data));
 
-    fetch("http://localhost:8080/dashboard/clients-overview")
+    fetch(`${baseUrl}/dashboard/clients-overview`)
       .then((res) => res.json())
       .then((data) => setClientOverview(data.data));
   }, []);
