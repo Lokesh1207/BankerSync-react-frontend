@@ -35,7 +35,7 @@ const UpdateModal = ({ open, onClose, loan, onSubmit }) => {
         <h3>Update Loan Details</h3>
         
         <TextField
-          label="Loan Value"
+          label="Loan amount"
           name="itemLoanValue"
           value={updatedLoan.itemLoanValue}
           onChange={handleInputChange}
@@ -44,7 +44,7 @@ const UpdateModal = ({ open, onClose, loan, onSubmit }) => {
         />
         
         <TextField
-          label="Interest Value"
+          label="Interest amount"
           name="itemInterestValue"
           value={updatedLoan.itemInterestValue}
           onChange={handleInputChange}

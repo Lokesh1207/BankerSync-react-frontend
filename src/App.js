@@ -13,6 +13,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import ManageLoans from './ManageLoans';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import Dashboard from './components/Dashboard';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -43,7 +44,7 @@ const App = () => {
             style={{
               position: "fixed",
               top: "9px",
-              right: "20px",
+              right: "70px",
               zIndex: 9999,
               display: "flex",
               alignItems: "center",
@@ -67,7 +68,7 @@ const App = () => {
             <Routes>
             <Route path="/login" element={<Login />} />
               <Route path="/" element={<ProtectedRoute><SideNav /></ProtectedRoute>}>
-                <Route index element={<Home />} />
+                <Route index element={<Dashboard />} />
                 <Route path="client" element={<ClientPage />} />
                 <Route path="client/getClients" element={<ManageClient />} />
                 <Route path="loan" element={<Loan />} />

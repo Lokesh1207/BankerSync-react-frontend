@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
   MenuItem,
   Snackbar,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiAlert from "@mui/material/Alert";
@@ -18,11 +21,12 @@ const Input = styled("input")({
 });
 
 const Loan = () => {
+  const [clients, setClients] = useState([]); 
   const [clientId, setClientId] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [ownerContactNumber, setOwnerContactNumber] = useState("");
   const [createdDate, setCreatedDate] = useState("");
-  const [itemPicture, setItemPicture] = useState(null); 
+  const [itemPicture, setItemPicture] = useState(null);
   const [itemValue, setItemValue] = useState("");
   const [itemLoanValue, setItemLoanValue] = useState("");
   const [itemInterestPercentage, setItemInterestPercentage] = useState("");
@@ -36,13 +40,44 @@ const Loan = () => {
   const [itemStatus, setItemStatus] = useState("NEW");
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
+  // Fetch clients when the component mounts
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await api.get("client/getClients");
+        setClients(response.data);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        setSnackbar({ open: true, message: "Failed to fetch clients.", severity: "error" });
+      }
+    };
+    fetchClients();
+  }, []);
+
+  // Handle client selection
+  const handleClientChange = async (e) => {
+    const selectedClientId = e.target.value;
+    setClientId(selectedClientId);
+
+    // Fetch client details
+    try {
+      const response = await api.get(`client/getClient/${selectedClientId}`);
+      const client = response.data;
+      setOwnerName(client.clientName);
+      setOwnerContactNumber(client.clientContactPrimary);
+    } catch (error) {
+      console.error("Error fetching client details:", error);
+      setSnackbar({ open: true, message: "Failed to fetch client details.", severity: "error" });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formattedCreatedDate = createdDate ? new Date(createdDate).toISOString().split("T")[0] : null;
     const formattedItemLoanDate = itemLoanDate ? new Date(itemLoanDate).toISOString().split("T")[0] : null;
     const formattedItemReturnDate = itemReturnDate ? new Date(itemReturnDate).toISOString().split("T")[0] : null;
-  
+
     const formData = new FormData();
     formData.append("loanDetails", JSON.stringify({
       ownerName,
@@ -52,19 +87,15 @@ const Loan = () => {
       itemLoanValue,
       itemInterestPercentage,
       itemInterestPeriod,
-      // itemInterestValue,
       itemLoanDate: formattedItemLoanDate,
       itemReturnDate: formattedItemReturnDate,
-      // loanPendingInterestAmount,
-      // loanPendingPrincipalAmount,
-      // loanPendingTotalAmount,
       itemStatus,
     }));
-  
+
     if (itemPicture) {
       formData.append("itemPicture", itemPicture);
     }
-  
+
     try {
       const response = await api.post(`/loan/addNewLoan/${clientId}`, formData, {
         headers: {
@@ -72,6 +103,7 @@ const Loan = () => {
         },
       });
 
+      // Reset form fields
       setClientId('');
       setOwnerName('');
       setOwnerContactNumber('');
@@ -99,15 +131,20 @@ const Loan = () => {
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
       <form onSubmit={handleSubmit}>
-        <h2>Loan Details</h2>
-        <TextField
-          label="Client ID"
-          name="clientId"
-          fullWidth
-          value={clientId}
-          onChange={(e) => setClientId(e.target.value)}
-          margin="normal"
-        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Client</InputLabel>
+          <Select
+            value={clientId}
+            onChange={handleClientChange}
+            label="Client"
+          >
+            {clients.map((client) => (
+              <MenuItem key={client.clientId} value={client.clientId}>
+                {client.clientName} (ID: {client.clientId})
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
           label="Owner Name"
           name="ownerName"
@@ -184,15 +221,6 @@ const Loan = () => {
           onChange={(e) => setItemInterestPeriod(e.target.value)}
           margin="normal"
         />
-        {/* <TextField
-          label="Item Interest Value"
-          name="itemInterestValue"
-          type="number"
-          fullWidth
-          value={itemInterestValue}
-          onChange={(e) => setItemInterestValue(e.target.value)}
-          margin="normal"
-        /> */}
         <TextField
           label="Item Loan Date"
           name="itemLoanDate"
@@ -213,33 +241,6 @@ const Loan = () => {
           margin="normal"
           InputLabelProps={{ shrink: true }}
         />
-        {/* <TextField
-          label="Loan Pending Interest Amount"
-          name="loanPendingInterestAmount"
-          type="number"
-          fullWidth
-          value={loanPendingInterestAmount}
-          onChange={(e) => setLoanPendingInterestAmount(e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          label="Loan Pending Principal Amount"
-          name="loanPendingPrincipalAmount"
-          type="number"
-          fullWidth
-          value={loanPendingPrincipalAmount}
-          onChange={(e) => setLoanPendingPrincipalAmount(e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          label="Loan Pending Total Amount"
-          name="loanPendingTotalAmount"
-          type="number"
-          fullWidth
-          value={loanPendingTotalAmount}
-          onChange={(e) => setLoanPendingTotalAmount(e.target.value)}
-          margin="normal"
-        /> */}
         <TextField
           select
           label="Item Status"

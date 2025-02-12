@@ -19,7 +19,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const ClientPage = () => {
   const initialClientData = {
-    clientId: "",
     clientName: "",
     clientFatherName: "",
     clientAddress: "",
@@ -106,16 +105,8 @@ const ClientPage = () => {
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
       <form onSubmit={handleSubmit}>
-        <h2>Client Registration</h2>
+        {/* <h2>Client Registration</h2> */}
         
-        <TextField
-          label="Client ID"
-          name="clientId"
-          value={clientData.clientId}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
         <TextField
           label="Name"
           name="clientName"

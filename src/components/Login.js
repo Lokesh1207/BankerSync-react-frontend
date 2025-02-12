@@ -8,9 +8,7 @@ import Alert from "@mui/material/Alert";
 import { useTheme } from "@mui/material";
 import api from "../api/api";
 
-
 const Login = () => {
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -25,13 +23,11 @@ const Login = () => {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ username, password }),
       });
-
       const result = await response.text();
       setMessage(result);
-
       if (response.ok && result === "login successful") {
         localStorage.setItem("isAuthenticated", true);
-        console.log(`Welcome, ${username}!`)
+        console.log(`Welcome, ${username}!`);
         navigate("/");
       } else {
         setMessage("Invalid username or password !");
@@ -40,95 +36,85 @@ const Login = () => {
       console.error("Login error:", error);
       setMessage("An error occurred while logging in.");
     }
-    
-     setTimeout(() => {
+
+    setTimeout(() => {
       setMessage("");
     }, 3000);
-    
   };
-
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const params = new URLSearchParams({ username, password });
-  
-  //     const response = await api.post(`/auth/login?${params.toString()}`);
-  
-  //     const result = response.data; 
-  //     setMessage(result);
-  
-  //     if (response.status === 200 && result === "login successful") {
-  //       localStorage.setItem("isAuthenticated", true);
-  //       console.log(`Welcome, ${username}!`);
-  //       navigate("/");
-  //     } else {
-  //       setMessage("Invalid username or password!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     setMessage("An error occurred while logging in.");
-  //   }
-  
-  //   setTimeout(() => {
-  //     setMessage("");
-  //   }, 3000);
-  // };
 
   return (
     <Box
-      sx={{
-        display: "flex",  
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        padding: 2,
-        backgroundColor: theme.palette.background.default, 
-        color: theme.palette.text.primary, 
-      }}
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh", 
+      paddingBottom: "0px", 
+      marginTop: "-10px",
+      backgroundImage: `url(https://assets.progressoft.com/blogs/user-experience-mistakes-to-avoid-in-digital-banking.png)`,
+      backgroundSize: "cover", // Cover the entire container
+      backgroundPosition: "center", // Center the image
+      backgroundRepeat: "no-repeat", // Prevent repeating
+      backgroundAttachment: "fixed", // Optional: Fix the background while scrolling
+      color: theme.palette.text.primary,
+    }}
     >
-      <Typography variant="h4" gutterBottom>
-        Login
-      </Typography>
       <Box
-        component="form"
-        onSubmit={handleLogin}
         sx={{
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           width: "100%",
           maxWidth: 400,
-          gap: 2,
           padding: 3,
           borderRadius: 3,
           boxShadow: 5,
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background for better readability
         }}
       >
-        <TextField
-          label="Username"
-          variant="outlined"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-        />
-        <TextField
-          label="Password"
-          type="password"
-          variant="outlined"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-        />
-
-        <Button type="submit" variant="contained" color="primary" fullWidth>Login</Button>
-
+        <Typography variant="h4" gutterBottom>
+          Login
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleLogin}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            gap: 2,
+          }}
+        >
+          <TextField
+            label="Username"
+            variant="outlined"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Password"
+            type="password"
+            variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Login
+          </Button>
+        </Box>
+        {message && (
+          <Alert
+            severity={message === "login successful" ? "success" : "error"}
+            sx={{ mt: 2, width: "100%" }}
+          >
+            {message}
+          </Alert>
+        )}
       </Box>
-
-      {message && (
-        <Alert severity={message === "login successful" ? "success" : "error"} sx={{ mt: 2, width: "100%", maxWidth: 400,}}>{message}</Alert>
-      )}
-
     </Box>
   );
 };
